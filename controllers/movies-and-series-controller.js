@@ -22,25 +22,43 @@ async function getMoviesByYear (request, response, year) {
   }
 }
 
-async function getMoviesByTitle (request, response, title) {
+async function getMoviesByTitle (request, response) {
   try {
-    const searchResult = await Movies.findByTitle(title)
+    let body = ''
 
-    response.writeHead(200, { 'Content-Type': 'application/json' })
-    response.end(JSON.stringify(searchResult))
+    request.on('data', chunk => {
+      body += chunk.toString()
+    })
+
+    request.on('end', async () => {
+      const searchResult = await Movies.findByTitle(JSON.parse(body).input)
+
+      response.writeHead(200, { 'Content-Type': 'application/json' })
+      response.end(JSON.stringify(searchResult))
+    })
   } catch (error) {
     console.log(error)
   }
 }
 
-async function getMoviesByTitleOrYear (request, response, search) {
+async function getMoviesByTitleOrYear (request, response) {
   try {
-    const searchResult = await Movies.findByTiTleOrYear(search)
+    let body = '';
 
-    response.writeHead(200, { 'Content-Type': 'application/json' })
-    response.end(JSON.stringify(searchResult))
+    request.on('data', chunk => {
+      body += chunk.toString()
+    })
+
+    request.on('end', async () => {
+      const searchResult = await Movies.findByTiTleOrYear(JSON.parse(body).input)
+
+      response.writeHead(200, { 'Content-Type': 'application/json' })
+      response.end(JSON.stringify(searchResult))
+    })
   } catch (error) {
     console.log(error)
+    response.writeHead(500, { 'Content-Type': 'text/plain' })
+    response.end('Internal Server Error')
   }
 }
 
